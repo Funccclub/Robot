@@ -193,7 +193,7 @@ public class RobotCacheService {
         if (Objects.isNull(ltPhoneCache)) {
             throw new RuntimeException(StrUtil.format("未绑定手机号{}", DesensitizedUtil.mobilePhone(phone)));
         }
-        String msg = StrUtil.format("手机：{}\r\nCookie：{}\r\n监控：{}\r\n阈值：{}MB\r\n合计：{}\r\n全部已用：{}\r\n通用已用：{}\n免费流量：{}\r\n跳点：{}\r\n统计：{}\r\n刷新：{}",
+        String msg = StrUtil.format("手机：{}\r\nCookie：{}\r\n监控：{}\r\n阈值：{}MB\r\n本月流量：{}\r\n通用流量：{}\r\n定向流量：{}\n免费流量：{}\r\n跳点：{}\r\n统计：{}\r\n刷新：{}",
                 DesensitizedUtil.mobilePhone(ltPhoneCache.getPhone()),
                 ltPhoneCache.getStatus().equals(Status.ENABLED) ? "有效" : "已失效",
                 ltPhoneCache.isMonitor() ? "已开启" : "未开启",
@@ -324,7 +324,7 @@ public class RobotCacheService {
             // 默认-1的，如果超了，代表是第一次执行，不通知
             boolean firstTime = ltPhoneCache.getSum().compareTo(BigDecimal.ZERO) < 0;
             // 和上一次的差值
-            BigDecimal diff = filteredUse.subtract(ltPhoneCache.getFilteredUse());
+            BigDecimal diff = filteredUse.subtract(ltPhoneCache.getUse());
 
             // 先保存
             ltPhoneCache.setSum(sum);
@@ -342,7 +342,7 @@ public class RobotCacheService {
             if (over && !firstTime) {
                 // 流量统计描述
                 String flowStatistic = this.getFlowStatistic(robotQq, friendQq, ltPhoneCache.getPhone());
-                flowStatistic = "❗❗❗跳点告警❗❗❗\r\n".concat(flowStatistic).concat(StrUtil.format("\r\n\r\n\r\n请先发送【{}】重置跳点, 否则该信息将会一直提醒!", LtCommand.RESET_OFFSET.getDisplayName()));
+                flowStatistic = "跳点告警\r\n".concat(flowStatistic).concat(StrUtil.format("\r\n\r\n\r\n请先发送【{}】重置跳点, 否则该信息将会一直提醒!", LtCommand.RESET_OFFSET.getDisplayName()));
                 // 发送消息
                 this.sendPrivateMessage(robotQq, friendQq, flowStatistic);
                 // 日志
